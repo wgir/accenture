@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.accenture.service.ProductServiceTest
--------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.217 s -- in com.accenture.service.ProductServiceTest

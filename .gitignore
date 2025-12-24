@@ -9,4 +9,15 @@ target/
 .settings/
 .project
 .classpath
-bin/
+*.pem
+.terraform/
+infra/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+.terraform.lock.hcl
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json

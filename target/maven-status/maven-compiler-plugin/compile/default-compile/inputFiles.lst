@@ -1,6 +1,7 @@
 C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\api\BranchController.java
 C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\api\FranchiseController.java
 C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\api\ProductController.java
+C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\config\DatabaseConfig.java
 C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\config\GlobalExceptionHandler.java
 C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\exception\ConflictException.java
 C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\exception\ResourceNotFoundException.java

@@ -27,6 +27,7 @@ com\accenture\model\Franchise$FranchiseBuilder.class
 com\accenture\model\dto\BranchResponse.class
 com\accenture\model\Product$ProductBuilder.class
 com\accenture\FranchiseApiApplication.class
+com\accenture\config\DatabaseConfig.class
 com\accenture\model\dto\ProductRequest.class
 com\accenture\model\dto\BranchResponse$BranchResponseBuilder.class
 com\accenture\model\Franchise.class
