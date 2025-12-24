@@ -37,9 +37,9 @@ A reactive Spring Boot application designed to manage franchises, their branches
 The application uses `src/main/resources/application.yml` for configuration. You can override database settings via environment variables:
 
 - `RDS_HOSTNAME`: Database host (default: `127.0.0.1`)
-- `RDS_PORT`: Database port (default: `3307`)
-- `RDS_DB_NAME`: Database name (default: `accenture`)
-- `RDS_DB_USERNAME`: Database user (default: `root`)
+- `RDS_PORT`: Database port (default: `3306`)
+- `RDS_DB_NAME`: Database name (default: `franchise`)
+- `RDS_DB_USERNAME`: Database user (default: `admin`)
 - `RDS_DB_PASSWORD`: Database password
 
 ## 🛠️ How to Compile and Run
@@ -56,6 +56,8 @@ mvn clean install
 ```
 
 ### 3. Run the Application
+Create database `franchise` in MySQL
+
 ```bash
 mvn spring-boot:run
 ```
@@ -67,6 +69,8 @@ mvn test
 ```
 
 ## 🔌 API Endpoints
+
+[Swagger](http://ec2-54-198-78-19.compute-1.amazonaws.com:8080/webjars/swagger-ui/index.html)
 
 ### Franchises
 | Method | Endpoint | Description |
