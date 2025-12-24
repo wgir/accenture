@@ -7,6 +7,9 @@ com\accenture\service\ProductService.class
 com\accenture\repository\BranchRepository.class
 com\accenture\model\dto\ProductRequest$ProductRequestBuilder.class
 com\accenture\repository\FranchiseRepository.class
+com\accenture\api\BranchController.class
+com\accenture\api\FranchiseController.class
+com\accenture\exception\ResourceNotFoundException.class
 com\accenture\service\FranchiseServiceImpl.class
 com\accenture\model\Product.class
 com\accenture\service\ProductServiceImpl.class
@@ -17,6 +20,7 @@ com\accenture\model\dto\FranchiseRequest.class
 com\accenture\model\dto\ProductNameRequest.class
 com\accenture\model\dto\ProductResponse.class
 com\accenture\repository\ProductRepository.class
+com\accenture\exception\ConflictException.class
 com\accenture\model\dto\ProductResponse$ProductResponseBuilder.class
 com\accenture\model\dto\ProductNameRequest$ProductNameRequestBuilder.class
 com\accenture\model\Franchise$FranchiseBuilder.class
@@ -29,6 +33,7 @@ com\accenture\model\Franchise.class
 com\accenture\service\BranchServiceImpl.class
 com\accenture\service\FranchiseService.class
 com\accenture\config\GlobalExceptionHandler.class
+com\accenture\api\ProductController.class
 com\accenture\model\dto\BranchRequest.class
 com\accenture\model\dto\ProductStockRequest.class
 com\accenture\model\Branch$BranchBuilder.class

@@ -1,5 +1,6 @@
 package com.accenture.api;
 
+import com.accenture.exception.ResourceNotFoundException;
 import com.accenture.model.dto.ProductNameRequest;
 import com.accenture.model.dto.ProductResponse;
 import com.accenture.model.dto.ProductStockRequest;
@@ -51,7 +52,7 @@ class ProductControllerTest {
                 // Arrange
                 Long productId = 99L;
                 when(productService.deleteProduct(productId))
-                                .thenReturn(Mono.error(new RuntimeException("Product not found")));
+                                .thenReturn(Mono.error(new ResourceNotFoundException("Product not found")));
 
                 // Act & Assert
                 webTestClient.delete()

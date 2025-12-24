@@ -47,6 +47,7 @@ class BranchServiceTest {
     @Test
     void addBranchToFranchise_Success() {
         when(franchiseRepository.findById(1L)).thenReturn(Mono.just(franchise));
+        when(branchRepository.existsByNameAndFranchiseId("Branch A", 1L)).thenReturn(Mono.just(false));
         when(entityTemplate.insert(any(Branch.class))).thenReturn(Mono.just(branch));
 
         StepVerifier.create(branchService.addBranchToFranchise(1L, request))
@@ -59,6 +60,7 @@ class BranchServiceTest {
     void updateBranch_Success() {
         Branch updatedBranch = Branch.builder().id(1L).name("Updated Branch").franchiseId(1L).build();
         when(branchRepository.findById(1L)).thenReturn(Mono.just(branch));
+        when(branchRepository.existsByNameAndFranchiseId("Updated Branch", 1L)).thenReturn(Mono.just(false));
         when(branchRepository.save(any(Branch.class))).thenReturn(Mono.just(updatedBranch));
 
         StepVerifier.create(branchService.updateBranch(1L, BranchRequest.builder().name("Updated Branch").build()))

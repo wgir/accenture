@@ -1,5 +1,6 @@
 package com.accenture.api;
 
+import com.accenture.exception.ResourceNotFoundException;
 import com.accenture.model.dto.*;
 import com.accenture.service.BranchService;
 import com.accenture.service.FranchiseService;
@@ -54,11 +55,10 @@ class FranchiseControllerTest {
                 .uri("/v1/franchises")
                 .exchange()
                 .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody()
-                .jsonPath("$.length()").isEqualTo(2)
-                .jsonPath("$[0].name").isEqualTo("Franchise 1")
-                .jsonPath("$[1].name").isEqualTo("Franchise 2");
+                .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
+                .expectBodyList(FranchiseResponse.class)
+                .hasSize(2)
+                .contains(f1, f2);
     }
 
     @Test
@@ -152,7 +152,7 @@ class FranchiseControllerTest {
         // Arrange
         Long franchiseId = 99L;
         when(productService.getTopProductsByFranchise(franchiseId))
-                .thenReturn(Flux.error(new RuntimeException("Franchise not found")));
+                .thenReturn(Flux.error(new ResourceNotFoundException("Franchise not found")));
 
         // Act & Assert
         webTestClient.get()
@@ -160,7 +160,8 @@ class FranchiseControllerTest {
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody()
-                .jsonPath("$.title").isEqualTo("Resource Not Found");
+                .jsonPath("$.title").isEqualTo("Resource Not Found")
+                .jsonPath("$.detail").isEqualTo("Franchise not found");
     }
 
     @Test

@@ -1,10 +1,10 @@
+C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\api\BranchController.java
+C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\api\FranchiseController.java
+C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\api\ProductController.java
 C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\config\GlobalExceptionHandler.java
-C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\config\RouterConfig.java
-C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\exception\ValidationException.java
+C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\exception\ConflictException.java
+C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\exception\ResourceNotFoundException.java
 C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\FranchiseApiApplication.java
-C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\handler\BranchHandler.java
-C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\handler\FranchiseHandler.java
-C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\handler\ProductHandler.java
 C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\model\Branch.java
 C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\model\dto\BranchRequest.java
 C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\model\dto\BranchResponse.java
@@ -26,4 +26,3 @@ C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\servic
 C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\service\FranchiseServiceImpl.java
 C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\service\ProductService.java
 C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\service\ProductServiceImpl.java
-C:\Users\Lenovo\Documents\Proyectos\accenture\src\main\java\com\accenture\validation\RequestValidator.java
