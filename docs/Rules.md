@@ -54,8 +54,8 @@
 - @Component: Generic bean
 
 ## Data Access:
-- Spring Data JPA for relational DBs
-- Hibernate as JPA implementation
+- Spring Data R2DBC for reactive DBs
+- R2DBC as JPA implementation
 - Repository interfaces (JpaRepository)
 - Transaction management (@Transactional)
 - Flyway/Liquibase for migrations
