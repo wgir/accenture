@@ -1,0 +1,12 @@
+target/
+.vscode/
+.idea/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+.settings/
+.project
+.classpath
+bin/
