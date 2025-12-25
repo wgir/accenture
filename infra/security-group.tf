@@ -27,8 +27,8 @@ resource "aws_security_group" "franchise_sg" {
 # By managing it here, Terraform can delete it before deleting the EC2 SG
 resource "aws_security_group_rule" "allow_ec2_to_rds" {
   type                     = "ingress"
-  from_port                = 3306
-  to_port                  = 3306
+  from_port                = var.rds_port
+  to_port                  = var.rds_port
   protocol                 = "tcp"
   security_group_id        = var.rds_security_group_id
   source_security_group_id = aws_security_group.franchise_sg.id

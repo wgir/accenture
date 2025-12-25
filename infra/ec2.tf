@@ -15,7 +15,7 @@ resource "local_file" "ssh_key" {
 }
 
 resource "aws_instance" "franchise_api" {
-  ami                         = "ami-0fc5d935ebf8bc3bc" # Amazon Linux 2023 (us-east-1) - Note: User logs suggest this is Ubuntu despite the comment
+  ami                         = "ami-0fc5d935ebf8bc3bc" # Ubuntu 22.04 LTS (us-east-1)
   instance_type               = "t3.micro"
   key_name                    = aws_key_pair.franchise_key.key_name
   availability_zone           = "us-east-1c" # Match RDS AZ
@@ -42,17 +42,21 @@ resource "aws_instance" "franchise_api" {
     # Add ubuntu user to docker group
     usermod -aG docker ubuntu
     
-    # Login to ECR and run container
+    # Extract registry from ecr_image and login
+    REGISTRY=$(echo "${var.ecr_image}" | cut -d'/' -f1)
     aws ecr get-login-password --region us-east-1 \
-    | docker login --username AWS --password-stdin ${var.ecr_image}
+    | docker login --username AWS --password-stdin "$REGISTRY"
 
-    docker run -d -p 8080:8080 \
+    # Pull and run container
+    docker pull "${var.ecr_image}"
+    docker run -d --name franchise-api -p 8080:8080 \
+      --restart unless-stopped \
       -e RDS_HOSTNAME="${var.rds_hostname}" \
       -e RDS_PORT="${var.rds_port}" \
       -e RDS_DB_NAME="${var.rds_database}" \
       -e RDS_DB_USERNAME="${var.rds_username}" \
       -e RDS_DB_PASSWORD="${var.rds_password}" \
-      ${var.ecr_image}
+      "${var.ecr_image}"
   EOF
 
   tags = {
