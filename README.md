@@ -70,7 +70,7 @@ mvn test
 
 ## 🔌 API Endpoints
 
-[Swagger](http://ec2-54-198-78-19.compute-1.amazonaws.com:8080/webjars/swagger-ui/index.html)
+[Swagger](http://ec2-13-218-78-102.compute-1.amazonaws.com:8080/webjars/swagger-ui/index.html)
 
 ### Franchises
 | Method | Endpoint | Description |
