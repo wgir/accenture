@@ -1,5 +1,6 @@
 package com.accenture.service;
 
+import com.accenture.exception.ConflictException;
 import com.accenture.model.Branch;
 import com.accenture.model.Product;
 import com.accenture.model.dto.ProductNameRequest;
@@ -51,12 +52,44 @@ class ProductServiceTest {
                                 .build();
 
                 when(branchRepository.findById(branchId)).thenReturn(Mono.just(branch));
-                when(entityTemplate.insert(any(Product.class))).thenReturn(Mono.just(savedProduct));
+                when(productRepository.existsByNameIgnoreCaseAndBranchId("New Product", branchId))
+                                .thenReturn(Mono.just(false));
+                when(productRepository.save(any(Product.class))).thenReturn(Mono.just(savedProduct));
 
                 StepVerifier.create(productService.addProductToBranch(branchId, request))
                                 .expectNextMatches(response -> response.getId().equals(10L)
                                                 && response.getName().equals("New Product"))
                                 .verifyComplete();
+        }
+
+        @Test
+        void addProductToBranch_Conflict() {
+                Long branchId = 1L;
+                ProductRequest request = ProductRequest.builder().name("Existing Product").stock(10).build();
+                Branch branch = Branch.builder().id(branchId).name("Branch A").build();
+
+                when(branchRepository.findById(branchId)).thenReturn(Mono.just(branch));
+                when(productRepository.existsByNameIgnoreCaseAndBranchId("Existing Product", branchId))
+                                .thenReturn(Mono.just(true));
+
+                StepVerifier.create(productService.addProductToBranch(branchId, request))
+                                .expectError(ConflictException.class)
+                                .verify();
+        }
+
+        @Test
+        void addProductToBranch_Conflict_IgnoreCase() {
+                Long branchId = 1L;
+                ProductRequest request = ProductRequest.builder().name("existing product").stock(10).build();
+                Branch branch = Branch.builder().id(branchId).name("Branch A").build();
+
+                when(branchRepository.findById(branchId)).thenReturn(Mono.just(branch));
+                when(productRepository.existsByNameIgnoreCaseAndBranchId("existing product", branchId))
+                                .thenReturn(Mono.just(true));
+
+                StepVerifier.create(productService.addProductToBranch(branchId, request))
+                                .expectError(ConflictException.class)
+                                .verify();
         }
 
         @Test
@@ -127,11 +160,38 @@ class ProductServiceTest {
                 Product updatedProduct = Product.builder().id(1L).name("New Name").stock(10).branchId(1L).build();
 
                 when(productRepository.findById(1L)).thenReturn(Mono.just(product));
+                when(productRepository.existsByNameIgnoreCaseAndBranchId("New Name", 1L)).thenReturn(Mono.just(false));
                 when(productRepository.save(any(Product.class))).thenReturn(Mono.just(updatedProduct));
 
                 StepVerifier.create(productService.updateProductName(1L,
                                 ProductNameRequest.builder().name("New Name").build()))
                                 .expectNextMatches(response -> response.getName().equals("New Name"))
                                 .verifyComplete();
+        }
+
+        @Test
+        void updateProductName_Success_SameName() {
+                Product product = Product.builder().id(1L).name("Product A").stock(10).branchId(1L).build();
+
+                when(productRepository.findById(1L)).thenReturn(Mono.just(product));
+                // No exists check expected
+
+                StepVerifier.create(productService.updateProductName(1L,
+                                ProductNameRequest.builder().name("PRODUCT A").build()))
+                                .expectNextMatches(response -> response.getName().equals("Product A"))
+                                .verifyComplete();
+        }
+
+        @Test
+        void updateProductName_Conflict() {
+                Product product = Product.builder().id(1L).name("Old Name").stock(10).branchId(1L).build();
+
+                when(productRepository.findById(1L)).thenReturn(Mono.just(product));
+                when(productRepository.existsByNameIgnoreCaseAndBranchId("Taken Name", 1L)).thenReturn(Mono.just(true));
+
+                StepVerifier.create(productService.updateProductName(1L,
+                                ProductNameRequest.builder().name("Taken Name").build()))
+                                .expectError(ConflictException.class)
+                                .verify();
         }
 }

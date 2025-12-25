@@ -1,5 +1,6 @@
 package com.accenture.service;
 
+import com.accenture.exception.ConflictException;
 import com.accenture.exception.ResourceNotFoundException;
 import com.accenture.model.Product;
 import com.accenture.model.dto.ProductNameRequest;
@@ -32,14 +33,17 @@ public class ProductServiceImpl implements ProductService {
         log.info("Adding product '{}' to branch id {}", request.getName(), branchId);
         return branchRepository.findById(branchId)
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("Branch not found")))
-                .flatMap(branch -> {
-                    Product product = Product.builder()
-                            .name(request.getName())
-                            .stock(request.getStock())
-                            .branchId(branch.getId())
-                            .build();
-                    return entityTemplate.insert(product);
-                })
+                .flatMap(branch -> productRepository.existsByNameIgnoreCaseAndBranchId(request.getName(), branchId)
+                        .flatMap(exists -> {
+                            if (exists) {
+                                return Mono.error(new ConflictException("Product name already exists in this branch"));
+                            }
+                            return Mono.defer(() -> productRepository.save(Product.builder()
+                                    .name(request.getName())
+                                    .stock(request.getStock())
+                                    .branchId(branch.getId())
+                                    .build()));
+                        }))
                 .map(this::mapToResponse);
     }
 
@@ -76,8 +80,18 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findById(productId)
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("Product not found")))
                 .flatMap(product -> {
-                    product.setName(request.getName());
-                    return productRepository.save(product);
+                    if (product.getName().equalsIgnoreCase(request.getName())) {
+                        return Mono.just(product);
+                    }
+                    return productRepository.existsByNameIgnoreCaseAndBranchId(request.getName(), product.getBranchId())
+                            .flatMap(exists -> {
+                                if (exists) {
+                                    return Mono.error(
+                                            new ConflictException("Product name already exists in this branch"));
+                                }
+                                product.setName(request.getName());
+                                return productRepository.save(product);
+                            });
                 })
                 .map(this::mapToResponse);
     }

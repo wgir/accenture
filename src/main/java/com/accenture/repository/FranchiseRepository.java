@@ -7,5 +7,5 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface FranchiseRepository extends R2dbcRepository<Franchise, Long> {
-    Mono<Franchise> findByName(String name);
+    Mono<Franchise> findByNameIgnoreCase(String name);
 }

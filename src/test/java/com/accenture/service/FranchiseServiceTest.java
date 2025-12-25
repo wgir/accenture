@@ -1,5 +1,7 @@
 package com.accenture.service;
 
+import com.accenture.exception.ConflictException;
+import com.accenture.exception.ResourceNotFoundException;
 import com.accenture.model.Franchise;
 import com.accenture.model.dto.FranchiseRequest;
 import com.accenture.repository.FranchiseRepository;
@@ -9,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -21,9 +22,6 @@ class FranchiseServiceTest {
 
         @Mock
         private FranchiseRepository franchiseRepository;
-
-        @Mock
-        private R2dbcEntityTemplate entityTemplate;
 
         @InjectMocks
         private FranchiseServiceImpl franchiseService;
@@ -45,13 +43,35 @@ class FranchiseServiceTest {
 
         @Test
         void createFranchise_Success() {
-                when(entityTemplate.insert(any(Franchise.class))).thenReturn(Mono.just(franchise));
+                when(franchiseRepository.findByNameIgnoreCase(any(String.class))).thenReturn(Mono.empty());
+                when(franchiseRepository.save(any(Franchise.class))).thenReturn(Mono.just(franchise));
 
                 StepVerifier.create(franchiseService.createFranchise(request))
                                 .expectNextMatches(
                                                 response -> response.getName().equals("Test Franchise")
                                                                 && response.getId().equals(1L))
                                 .verifyComplete();
+        }
+
+        @Test
+        void createFranchise_Conflict() {
+                when(franchiseRepository.findByNameIgnoreCase(any(String.class))).thenReturn(Mono.just(franchise));
+
+                StepVerifier.create(franchiseService.createFranchise(request))
+                                .expectError(ConflictException.class)
+                                .verify();
+        }
+
+        @Test
+        void createFranchise_Conflict_IgnoreCase() {
+                FranchiseRequest lowercaseRequest = FranchiseRequest.builder()
+                                .name("test franchise")
+                                .build();
+                when(franchiseRepository.findByNameIgnoreCase("test franchise")).thenReturn(Mono.just(franchise));
+
+                StepVerifier.create(franchiseService.createFranchise(lowercaseRequest))
+                                .expectError(ConflictException.class)
+                                .verify();
         }
 
         @Test
@@ -62,11 +82,44 @@ class FranchiseServiceTest {
                                 .build();
 
                 when(franchiseRepository.findById(1L)).thenReturn(Mono.just(franchise));
+                when(franchiseRepository.findByNameIgnoreCase("Updated Name")).thenReturn(Mono.empty());
                 when(franchiseRepository.save(any(Franchise.class))).thenReturn(Mono.just(updatedFranchise));
 
                 StepVerifier.create(franchiseService.updateFranchise(1L,
                                 FranchiseRequest.builder().name("Updated Name").build()))
                                 .expectNextMatches(response -> response.getName().equals("Updated Name"))
                                 .verifyComplete();
+        }
+
+        @Test
+        void updateFranchise_Success_SameName() {
+                when(franchiseRepository.findById(1L)).thenReturn(Mono.just(franchise));
+                when(franchiseRepository.save(any(Franchise.class))).thenReturn(Mono.just(franchise));
+
+                StepVerifier.create(franchiseService.updateFranchise(1L,
+                                FranchiseRequest.builder().name("Test Franchise").build()))
+                                .expectNextMatches(response -> response.getName().equals("Test Franchise"))
+                                .verifyComplete();
+        }
+
+        @Test
+        void updateFranchise_Conflict() {
+                when(franchiseRepository.findById(1L)).thenReturn(Mono.just(franchise));
+                when(franchiseRepository.findByNameIgnoreCase("Existing Name"))
+                                .thenReturn(Mono.just(Franchise.builder().id(2L).name("Existing Name").build()));
+
+                StepVerifier.create(franchiseService.updateFranchise(1L,
+                                FranchiseRequest.builder().name("Existing Name").build()))
+                                .expectError(ConflictException.class)
+                                .verify();
+        }
+
+        @Test
+        void updateFranchise_NotFound() {
+                when(franchiseRepository.findById(1L)).thenReturn(Mono.empty());
+
+                StepVerifier.create(franchiseService.updateFranchise(1L, request))
+                                .expectError(ResourceNotFoundException.class)
+                                .verify();
         }
 }

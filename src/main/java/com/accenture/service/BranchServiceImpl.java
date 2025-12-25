@@ -9,7 +9,6 @@ import com.accenture.repository.BranchRepository;
 import com.accenture.repository.FranchiseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
@@ -21,7 +20,6 @@ public class BranchServiceImpl implements BranchService {
 
     private final BranchRepository branchRepository;
     private final FranchiseRepository franchiseRepository;
-    private final R2dbcEntityTemplate entityTemplate;
 
     @Override
     @Transactional
@@ -29,17 +27,17 @@ public class BranchServiceImpl implements BranchService {
         log.info("Adding branch '{}' to franchise id {}", request.getName(), franchiseId);
         return franchiseRepository.findById(franchiseId)
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("Franchise not found")))
-                .flatMap(franchise -> branchRepository.existsByNameAndFranchiseId(request.getName(), franchiseId)
+                .flatMap(franchise -> branchRepository
+                        .existsByNameIgnoreCaseAndFranchiseId(request.getName(), franchiseId)
                         .flatMap(exists -> {
                             if (exists) {
                                 return Mono
                                         .error(new ConflictException("Branch name already exists in this franchise"));
                             }
-                            Branch branch = Branch.builder()
+                            return Mono.defer(() -> branchRepository.save(Branch.builder()
                                     .name(request.getName())
                                     .franchiseId(franchise.getId())
-                                    .build();
-                            return entityTemplate.insert(branch);
+                                    .build()));
                         }))
                 .map(this::mapToResponse);
     }
@@ -51,10 +49,11 @@ public class BranchServiceImpl implements BranchService {
         return branchRepository.findById(id)
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("Branch not found")))
                 .flatMap(branch -> {
-                    if (branch.getName().equals(request.getName())) {
+                    if (branch.getName().equalsIgnoreCase(request.getName())) {
                         return Mono.just(branch);
                     }
-                    return branchRepository.existsByNameAndFranchiseId(request.getName(), branch.getFranchiseId())
+                    return branchRepository
+                            .existsByNameIgnoreCaseAndFranchiseId(request.getName(), branch.getFranchiseId())
                             .flatMap(exists -> {
                                 if (exists) {
                                     return Mono.error(
